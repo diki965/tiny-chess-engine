@@ -1,6 +1,18 @@
-# tiny-chess-01 entry
+# tiny-chess-engine
+
+[![make.fun · tiny-chess-01](https://make.fun/badge/tiny-chess-01.svg)](https://make.fun/bounty/tiny-chess-01?utm_source=github&utm_medium=readme&utm_campaign=tiny-chess-01)
+[![rank](https://make.fun/badge/tiny-chess-01/diki965/tiny-chess-engine/rank.svg)](https://make.fun/bounty/tiny-chess-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=tiny-chess-01)
+[![reward](https://make.fun/badge/tiny-chess-01/diki965/tiny-chess-engine/reward.svg)](https://make.fun/bounty/tiny-chess-01?utm_source=github&utm_medium=readme&utm_campaign=tiny-chess-01)
+
 
 A compact chess engine in a single 4,095-byte `main.py` (MIT license).
+
+## Run it
+
+```sh
+python3 main.py
+```
+
 
 ## Design
 
@@ -25,7 +37,7 @@ A compact chess engine in a single 4,095-byte `main.py` (MIT license).
   Python 3.13, standard library only. It reads, imports or execs no other
   file in the repository. Compression is allowed and counted — this file
   unpacks and execs an LZMA payload.
-- The whole tree (this README, LICENSE) is 6,536 bytes total, no file
+- The whole tree is 8,108 bytes total (README, LICENSE, main.py), no file
   over 4,096. MIT licence.
 
 ## Development
@@ -51,5 +63,3 @@ nodes-100k/500k rungs). Trial-0 replayed 3x with byte-identical
 `state.json`. Sunfish 4k baseline practice mean: **~1365** (6-game).
 v3 clears it by ~+216 Elo.
 
-Bench: ~26,800 nps, slowest move ~2.3 s at 50k nodes (~2.9 s at 65k)
-— inside the 10 s/move limit on 1 CPU.
