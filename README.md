@@ -1,30 +1,55 @@
-# tiny-chess-01 starter
+# tiny-chess-01 entry
 
-A working entry to fork: `main.py` plays every game through the env and
-picks the move that captures the most valuable piece. It is a template,
-not a contender. Replace its one-line choice with a real search.
+A compact chess engine in a single 4,095-byte `main.py` (MIT license).
 
-## The size rule
+## Design
 
-- `main.py` is the whole engine: at most 4,096 bytes as committed,
+- **Move generation:** 0x88 board, fully legal moves incl. castling,
+  en passant and promotions.
+- **Search:** alpha-beta with a fixed 65,000-node budget per move
+  (deterministic — no clock), iterative deepening, quiescence over
+  captures, promotions and check evasions, transposition table
+  **persistent across moves within a game**, killer moves + history
+  heuristic, null-move pruning (R=2) and LMR.
+- **Evaluation:** tapered piece-square tables with material
+  100/320/330/500/900, bishop-pair bonus, pawn structure, rook
+  open/semi-open files and 7th-rank bonuses, king shelter and an
+  endgame king table.
+- **Protocol:** speaks the make.fun env over HTTP (`MAKEFUN_ENV_URL`),
+  returning one UCI move per turn; deterministic: the same input
+  replays byte-for-byte.
+
+## Size rule
+
+- `main.py` is the whole engine: 4,095 bytes as committed (cap 4,096),
   Python 3.13, standard library only. It reads, imports or execs no other
-  file in the repository.
-- Every byte counts: comments, whitespace, docstrings.
-- Compression is allowed and counted. A `main.py` that unpacks and execs
-  a compressed payload (`lzma`, `zlib`) is fine; the payload and the
-  unpacker are both part of its 4,096 bytes.
-- The rest of the tree (this README, LICENSE) is at most 8,192 bytes in
-  all, and no file over 4,096. MIT, BSD, ISC and 0BSD licences fit.
-- Search to a fixed depth or node count, never a clock: a final
-  contender's trials are replayed and must play the same moves.
+  file in the repository. Compression is allowed and counted — this file
+  unpacks and execs an LZMA payload.
+- The whole tree (this README, LICENSE) is 6,536 bytes total, no file
+  over 4,096. MIT licence.
 
-## Grade it locally
+## Development
 
-You need Docker and the `makefun` CLI. Download the competition's dev
-kit, unpack it, and from inside it run:
+Built from scratch (original code — no sunfish source copied) in
+`engine-dev/engine.py`, then minified and LZMA-packed with
+`makefun compress`. Full (unpacked) source: `source.py` alongside the
+packed file in `engine-dev/golfed/` (8,586 bytes; it travels with the
+submission via `makefun bundle` — it cannot live in this tree, the
+per-file cap is 4,096).
 
-    makefun grade-local --kit . --bot <your repository> --driver docker
+## Practice results (kit gauntlet, 6 games per trial)
 
-It plays one practice trial against the house engines, replays it, and
-prints the Elo the scorer gives it. Before you submit, `makefun check`
-runs the site's own pre-submit checks, size caps included.
+| version | trial 0 | trial 1 | trial 2 | mean Elo |
+|---------|---------|---------|---------|----------|
+| v1 (50k nodes) | 1654 | 1364 | 1451 | 1490 |
+| v2 (65k nodes, restored eval) | 1364 | 1364 | 1545 | 1424 |
+| **v3 (persistent TT + full eval)** | **1545** | **1654** | **1545** | **1581** |
+
+v3 record: **13 wins, 2 draws, 3 losses** across the three trials
+(9-0-0 vs the depth-2/3/4 house engines; losses only vs the
+nodes-100k/500k rungs). Trial-0 replayed 3x with byte-identical
+`state.json`. Sunfish 4k baseline practice mean: **~1365** (6-game).
+v3 clears it by ~+216 Elo.
+
+Bench: ~26,800 nps, slowest move ~2.3 s at 50k nodes (~2.9 s at 65k)
+— inside the 10 s/move limit on 1 CPU.
