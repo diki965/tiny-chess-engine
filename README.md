@@ -32,10 +32,10 @@ A compact chess engine in a single 4,095-byte `main.py` (MIT license).
 
 Built from scratch (original code — no sunfish source copied) in
 `engine-dev/engine.py`, then minified and LZMA-packed with
-`makefun compress`. Full (unpacked) source: `source.py` alongside the
-packed file in `engine-dev/golfed/` (8,586 bytes; it travels with the
-submission via `makefun bundle` — it cannot live in this tree, the
-per-file cap is 4,096).
+`makefun compress`. Full (unpacked) source: `source.py` (8,586 bytes),
+kept uncommitted in this folder (it cannot be committed — the
+per-file cap is 4,096) so `makefun bundle` can send it beside the
+sessions; a copy also lives in `engine-dev/golfed/`.
 
 ## Practice results (kit gauntlet, 6 games per trial)
 
